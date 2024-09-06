@@ -1,31 +1,39 @@
 package Caso;
+import Caso.Producto.Tipo;
 
-public class Distribuidor extends Thread {
-    private Tipo_Producto tipo_Producto;
-    private Buffer depositoDistribucion;
+class Distribuidor implements Runnable {
+    private Buffer buffer;
+    private Tipo tipoDistribuidor;
+    private boolean finaliza = false;
 
-    public enum Tipo_Producto {
-        A, B, FIN_A, FIN_B
+    public Distribuidor(Tipo tipoDistribuidor, Buffer buffer) {
+        this.buffer = buffer;
+        this.tipoDistribuidor = tipoDistribuidor;
     }
 
-    public Distribuidor(Tipo_Producto producto, Buffer depositoDistribucion) {
-        this.tipo_Producto = producto;
-        this.depositoDistribucion = depositoDistribucion;
+    @Override
+    public void run() {
+        try {
+            while (!finaliza) {
+                Producto producto = buffer.retirar();
+
+                if ((tipoDistribuidor == Producto.Tipo.A && (producto.getTipo() == Producto.Tipo.A || producto.getTipo() == Producto.Tipo.FIN_A)) ||
+                    (tipoDistribuidor == Producto.Tipo.B && (producto.getTipo() == Producto.Tipo.B || producto.getTipo() == Producto.Tipo.FIN_B))) {
+                    if (producto.getTipo() == Producto.Tipo.FIN_A || producto.getTipo() == Producto.Tipo.FIN_B) {
+                        finaliza = true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public Tipo_Producto getTipo_Producto() {
-        return tipo_Producto;
+    public boolean isFinaliza() {
+        return finaliza;
     }
 
-    public void setTipo_Producto(Tipo_Producto producto) {
-        this.tipo_Producto = producto;
-    }
-
-    public Buffer getDepositoDistribucion() {
-        return depositoDistribucion;
-    }
-
-    public void setDepositoDistribucion(Buffer depositoDistribucion) {
-        this.depositoDistribucion = depositoDistribucion;
+    public void setFinaliza(boolean finaliza) {
+        this.finaliza = finaliza;
     }
 }
