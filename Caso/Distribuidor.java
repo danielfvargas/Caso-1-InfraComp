@@ -1,31 +1,40 @@
 package Caso;
 
 public class Distribuidor extends Thread {
-    private Tipo_Producto tipo_Producto;
+    private Producto Tipo_producto;
     private Buffer depositoDistribucion;
 
-    public enum Tipo_Producto {
+    public enum Producto {
         A, B, FIN_A, FIN_B
     }
 
-    public Distribuidor(Tipo_Producto producto, Buffer depositoDistribucion) {
-        this.tipo_Producto = producto;
+    public Distribuidor(Producto producto, Buffer depositoDistribucion) {
+        this.Tipo_producto = producto;
         this.depositoDistribucion = depositoDistribucion;
     }
 
-    public Tipo_Producto getTipo_Producto() {
-        return tipo_Producto;
+    @Override
+    public void run() {
+        try {
+            while (true) {
+                depositoDistribucion.retirarProducto();
+                System.out.println("Distribuidor de producto " + Tipo_producto + " retiró un producto.");
+
+                if (Tipo_producto == Producto.FIN_A || Tipo_producto == Producto.FIN_B) {
+                    System.out.println("Distribuidor de " + Tipo_producto + " ha terminado.");
+                    break;
+                }
+            }
+        } catch (InterruptedException e) {
+            System.out.println("Distribuidor ha sido interrumpido.");
+        }
     }
 
-    public void setTipo_Producto(Tipo_Producto producto) {
-        this.tipo_Producto = producto;
+    public Producto getTipo_producto() {
+        return Tipo_producto;
     }
 
-    public Buffer getDepositoDistribucion() {
-        return depositoDistribucion;
-    }
-
-    public void setDepositoDistribucion(Buffer depositoDistribucion) {
-        this.depositoDistribucion = depositoDistribucion;
+    public void setTipo_producto(Producto producto) {
+        this.Tipo_producto = producto;
     }
 }

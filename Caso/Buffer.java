@@ -8,10 +8,20 @@ public class Buffer {
 
     private int capacidad;
     private Especial especializacion;
+    private int productosActuales = 0;
 
     public Buffer(int capacidad, Especial especializacion) {
         this.capacidad = capacidad;
         this.especializacion = especializacion;
+    }
+
+
+    public synchronized void retirarProducto() throws InterruptedException {
+        while (productosActuales == 0) {
+            wait();
+        }
+        productosActuales--;
+        notifyAll(); 
     }
 
     public int getCapacidad() {
