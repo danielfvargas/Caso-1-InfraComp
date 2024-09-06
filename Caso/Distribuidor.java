@@ -1,40 +1,39 @@
 package Caso;
+import Caso.Producto.Tipo;
 
-public class Distribuidor extends Thread {
-    private Producto Tipo_producto;
-    private Buffer depositoDistribucion;
+class Distribuidor implements Runnable {
+    private Buffer buffer;
+    private Tipo tipoDistribuidor;
+    private boolean finaliza = false;
 
-    public enum Producto {
-        A, B, FIN_A, FIN_B
-    }
-
-    public Distribuidor(Producto producto, Buffer depositoDistribucion) {
-        this.Tipo_producto = producto;
-        this.depositoDistribucion = depositoDistribucion;
+    public Distribuidor(Tipo tipoDistribuidor, Buffer buffer) {
+        this.buffer = buffer;
+        this.tipoDistribuidor = tipoDistribuidor;
     }
 
     @Override
     public void run() {
         try {
-            while (true) {
-                depositoDistribucion.retirarProducto();
-                System.out.println("Distribuidor de producto " + Tipo_producto + " retiró un producto.");
+            while (!finaliza) {
+                Producto producto = buffer.retirar();
 
-                if (Tipo_producto == Producto.FIN_A || Tipo_producto == Producto.FIN_B) {
-                    System.out.println("Distribuidor de " + Tipo_producto + " ha terminado.");
-                    break;
+                if ((tipoDistribuidor == Producto.Tipo.A && (producto.getTipo() == Producto.Tipo.A || producto.getTipo() == Producto.Tipo.FIN_A)) ||
+                    (tipoDistribuidor == Producto.Tipo.B && (producto.getTipo() == Producto.Tipo.B || producto.getTipo() == Producto.Tipo.FIN_B))) {
+                    if (producto.getTipo() == Producto.Tipo.FIN_A || producto.getTipo() == Producto.Tipo.FIN_B) {
+                        finaliza = true;
+                    }
                 }
             }
-        } catch (InterruptedException e) {
-            System.out.println("Distribuidor ha sido interrumpido.");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public Producto getTipo_producto() {
-        return Tipo_producto;
+    public boolean isFinaliza() {
+        return finaliza;
     }
 
-    public void setTipo_producto(Producto producto) {
-        this.Tipo_producto = producto;
+    public void setFinaliza(boolean finaliza) {
+        this.finaliza = finaliza;
     }
 }
