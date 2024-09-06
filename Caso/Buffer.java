@@ -11,15 +11,13 @@ public class Buffer {
     
     private Queue<Producto> productos;
     private int capacidad;
-    private Especial especializacion; 
-    
     public Buffer(int capacidad, Especial especializacion) {
         this.capacidad = capacidad;
         this.especializacion = especializacion;
         this.productos = new LinkedList<>();
     }
     public synchronized void almacenar(Producto producto) {
-        try {
+    try {
             while (productos.size() == capacidad) {
                 wait();
             }

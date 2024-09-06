@@ -2,6 +2,8 @@ package Caso;
 import java.util.Scanner;
 import Caso.Buffer.Especial;
 
+import java.util.Scanner;
+
 public class Main {
 
     public static void main(String[] args) {
