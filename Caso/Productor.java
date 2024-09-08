@@ -1,7 +1,7 @@
 package Caso;
 import Caso.Producto.Tipo;
 
-class Productor implements Runnable {
+class Productor extends Thread {
     private Buffer buffer;
     private Tipo tipoProducto;
     private int numProductos;

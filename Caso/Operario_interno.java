@@ -1,6 +1,6 @@
 package Caso;
 
-class Operario_interno implements Runnable {
+class Operario_interno extends Thread {
     private Buffer bufferInicio;
     private Buffer bufferFin;
     private boolean finaliza = false;

@@ -1,7 +1,7 @@
 package Caso;
 import Caso.Producto.Tipo;
 
-class Distribuidor implements Runnable {
+class Distribuidor extends Thread {
     private Buffer buffer;
     private Tipo tipoDistribuidor;
     private boolean finaliza = false;
@@ -15,12 +15,23 @@ class Distribuidor implements Runnable {
     public void run() {
         try {
             while (!finaliza) {
-                Producto producto = buffer.retirar();
-
-                if ((tipoDistribuidor == Producto.Tipo.A && (producto.getTipo() == Producto.Tipo.A || producto.getTipo() == Producto.Tipo.FIN_A)) ||
-                    (tipoDistribuidor == Producto.Tipo.B && (producto.getTipo() == Producto.Tipo.B || producto.getTipo() == Producto.Tipo.FIN_B))) {
-                    if (producto.getTipo() == Producto.Tipo.FIN_A || producto.getTipo() == Producto.Tipo.FIN_B) {
-                        finaliza = true;
+                synchronized (buffer) {
+                    if (buffer.productos.isEmpty()) {
+                        buffer.wait(); 
+                    } else {
+                        Producto primerProducto = buffer.productos.peek();
+                        if ((tipoDistribuidor == Producto.Tipo.A && (primerProducto.getTipo() == Producto.Tipo.A || primerProducto.getTipo() == Producto.Tipo.FIN_A)) ||
+                            (tipoDistribuidor == Producto.Tipo.B && (primerProducto.getTipo() == Producto.Tipo.B || primerProducto.getTipo() == Producto.Tipo.FIN_B))) {
+                            
+                            Producto producto = buffer.retirar(); 
+                            buffer.notifyAll(); 
+    
+                            if (producto.getTipo() == Producto.Tipo.FIN_A || producto.getTipo() == Producto.Tipo.FIN_B) {
+                                finaliza = true;
+                            }
+                        } else {
+                            buffer.wait();
+                        }
                     }
                 }
             }
@@ -28,6 +39,7 @@ class Distribuidor implements Runnable {
             e.printStackTrace();
         }
     }
+    
 
     public boolean isFinaliza() {
         return finaliza;
@@ -37,3 +49,4 @@ class Distribuidor implements Runnable {
         this.finaliza = finaliza;
     }
 }
+

@@ -9,15 +9,17 @@ public class Buffer {
         DEPOSITO_PRODUCCION, DEPOSITO_DISTRIBUCION, CINTA_TRANSPORTADORA
     }
     
-    private Queue<Producto> productos;
+    public Queue<Producto> productos;
     private int capacidad;
+    private Especial especializacion; 
+    
     public Buffer(int capacidad, Especial especializacion) {
         this.capacidad = capacidad;
         this.especializacion = especializacion;
         this.productos = new LinkedList<>();
     }
     public synchronized void almacenar(Producto producto) {
-    try {
+        try {
             while (productos.size() == capacidad) {
                 wait();
             }
@@ -48,5 +50,9 @@ public class Buffer {
 
     public Especial getEspecializacion() {
         return especializacion;
+    }
+
+    public Queue<Producto> getProductos(){
+        return productos;
     }
 }
