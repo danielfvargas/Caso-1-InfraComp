@@ -22,6 +22,8 @@ class Distribuidor implements Runnable {
                     if (producto.getTipo() == Producto.Tipo.FIN_A || producto.getTipo() == Producto.Tipo.FIN_B) {
                         finaliza = true;
                     }
+                } else {
+                    buffer.almacenar(producto);
                 }
             }
         } catch (Exception e) {

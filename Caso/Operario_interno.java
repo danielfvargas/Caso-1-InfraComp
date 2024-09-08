@@ -13,10 +13,10 @@ class Operario_interno implements Runnable {
     @Override
     public void run() {
         try {
+            int contadorFin = 0;
             while (!finaliza) { 
                 Producto producto = bufferInicio.retirar();
                 bufferFin.almacenar(producto);
-                int contadorFin = 0;
                 if (producto.getTipo() == Producto.Tipo.FIN_A || producto.getTipo() == Producto.Tipo.FIN_B) {
                     contadorFin++;
                     if (contadorFin == 4){
