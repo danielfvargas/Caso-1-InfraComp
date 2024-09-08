@@ -11,17 +11,22 @@ public class Buffer {
     
     private Queue<Producto> productos;
     private int capacidad;
+    private Especial especializacion;
+
     public Buffer(int capacidad, Especial especializacion) {
         this.capacidad = capacidad;
         this.especializacion = especializacion;
         this.productos = new LinkedList<>();
     }
+
     public synchronized void almacenar(Producto producto) {
-    try {
+        try {
             while (productos.size() == capacidad) {
+                System.out.println(especializacion + " lleno. Esperando para almacenar...");
                 wait();
             }
             productos.add(producto);
+            System.out.println("Producto " + producto.getTipo() + " almacenado en " + especializacion + ". Total: " + productos.size());
             notifyAll();
         } catch (Exception e) {
             e.printStackTrace();
@@ -31,9 +36,11 @@ public class Buffer {
     public synchronized Producto retirar() {
         try {
             while (productos.isEmpty()) {
+                System.out.println(especializacion + " vacío. Esperando para retirar...");
                 wait();
             }
             Producto producto = productos.poll();
+            System.out.println("Producto " + producto.getTipo() + " retirado de " + especializacion + ". Total: " + productos.size());
             notifyAll();
             return producto;
         } catch (Exception e) {
