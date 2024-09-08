@@ -1,4 +1,6 @@
 package Caso;
+import java.util.Queue;
+
 import Caso.Producto.Tipo;
 
 class Distribuidor extends Thread {
@@ -13,24 +15,25 @@ class Distribuidor extends Thread {
 
     @Override
     public void run() {
+        Queue<Producto> productos = buffer.getProductos();
         try {
             while (!finaliza) {
                 synchronized (buffer) {
-                    if (buffer.productos.isEmpty()) {
-                        buffer.wait(); // Espera si el buffer está vacío
+                    if (productos.isEmpty()) {
+                        buffer.wait();
                     } else {
-                        Producto primerProducto = buffer.productos.peek(); // Obtiene el primer producto del buffer
+                        Producto primerProducto = productos.peek();
                         if ((tipoDistribuidor == Producto.Tipo.A && (primerProducto.getTipo() == Producto.Tipo.A || primerProducto.getTipo() == Producto.Tipo.FIN_A)) ||
                             (tipoDistribuidor == Producto.Tipo.B && (primerProducto.getTipo() == Producto.Tipo.B || primerProducto.getTipo() == Producto.Tipo.FIN_B))) {
                             
-                            Producto producto = buffer.retirar();  // Retira el producto del buffer
-                            buffer.notifyAll(); // Notifica a los hilos en espera
+                            Producto producto = buffer.retirar();
+                            buffer.notifyAll();
     
                             if (producto.getTipo() == Producto.Tipo.FIN_A || producto.getTipo() == Producto.Tipo.FIN_B) {
-                                finaliza = true; // Finaliza si se retira el producot final
+                                finaliza = true;
                             }
                         } else {
-                            buffer.wait(); // Espera si el producto no es del tipo del distribuidor
+                            buffer.wait();
                         }
                     }
                 }
