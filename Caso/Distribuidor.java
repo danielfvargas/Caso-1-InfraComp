@@ -36,6 +36,8 @@ class Distribuidor extends Thread {
                             buffer.wait();
                         }
                     }
+                } else {
+                    buffer.almacenar(producto);
                 }
             }
         } catch (Exception e) {
