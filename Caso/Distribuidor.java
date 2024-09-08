@@ -15,8 +15,8 @@ class Distribuidor extends Thread {
 
     @Override
     public void run() {
-        Queue<Producto> productos = buffer.getProductos();
         try {
+            Queue<Producto> productos = buffer.getProductos();
             while (!finaliza) {
                 synchronized (buffer) {
                     if (productos.isEmpty()) {
@@ -36,8 +36,6 @@ class Distribuidor extends Thread {
                             buffer.wait();
                         }
                     }
-                } else {
-                    buffer.almacenar(producto);
                 }
             }
         } catch (Exception e) {
@@ -54,4 +52,3 @@ class Distribuidor extends Thread {
         this.finaliza = finaliza;
     }
 }
-
