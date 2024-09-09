@@ -15,9 +15,13 @@ public class Main {
             System.out.println("Ingrese la capacidad del depósito de distribución:");
             int capDepDist = scanner.nextInt();
 
+            if (capDepProd <= 0 || capDepDist <= 0) {
+                throw new IllegalArgumentException("Capacidad de los depósitos debe ser positiva");
+            }
+
             System.out.println("Ingrese el número de productos que cada productor generará:");
             int numProductos = scanner.nextInt();
-
+            
             Buffer deposito_produccion = new Buffer(capDepProd, Especial.DEPOSITO_PRODUCCION);
             Buffer cinta_transportadora = new Buffer(1, Especial.CINTA_TRANSPORTADORA);
             Buffer deposito_distribucion = new Buffer(capDepDist, Especial.DEPOSITO_DISTRIBUCION);
@@ -55,7 +59,7 @@ public class Main {
             for (Thread thread : threads) {
                 try {
                     thread.join();
-                }catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

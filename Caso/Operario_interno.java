@@ -22,9 +22,12 @@ class Operario_interno extends Thread {
                     if (contadorFin == 4){
                         finaliza = true;
                     }
+                } else {
+                Thread.yield();  
                 }
             }
-        } catch (Exception e) {
+        }
+            catch (Exception e) {
             e.printStackTrace();
         }
     }
