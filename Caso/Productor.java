@@ -1,42 +1,28 @@
 package Caso;
+import Caso.Producto.Tipo;
 
-public class Productor {
-    private Tipo_Producto tipo_Producto;
+class Productor extends Thread {
+    private Buffer buffer;
+    private Tipo tipoProducto;
     private int numProductos;
-    private Buffer depositoProduccion;
 
-    public enum Tipo_Producto{
-        A, B
-    }
-
-    public Productor(Tipo_Producto tipo_Producto, int numProductos, Buffer depositoProduccion) {
-        this.tipo_Producto = tipo_Producto;
-        this.numProductos = numProductos;
-        this.depositoProduccion = depositoProduccion;
-    }
-
-    public Tipo_Producto getTipo_Producto() {
-        return tipo_Producto;
-    }
-
-    public void setTipo_Producto(Tipo_Producto tipo_Producto) {
-        this.tipo_Producto = tipo_Producto;
-    }
-
-    public int getNumProductos() {
-        return numProductos;
-    }
-
-    public void setNumProductos(int numProductos) {
+    public Productor(Tipo tipoProducto, int numProductos, Buffer buffer) {
+        this.buffer = buffer;
+        this.tipoProducto = tipoProducto;
         this.numProductos = numProductos;
     }
 
-    public Buffer getDepositoProduccion() {
-        return depositoProduccion;
+    @Override
+    public void run() {
+        try {
+            for (int i = 0; i < numProductos; i++) {
+                Producto producto = new Producto(tipoProducto); 
+                buffer.almacenar(producto);
+            }
+            Producto productoFin = new Producto(tipoProducto == Producto.Tipo.A ? Producto.Tipo.FIN_A : Producto.Tipo.FIN_B);
+            buffer.almacenar(productoFin);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-
-    public void setDepositoProduccion(Buffer depositoProduccion) {
-        this.depositoProduccion = depositoProduccion;
-    }
- 
 }

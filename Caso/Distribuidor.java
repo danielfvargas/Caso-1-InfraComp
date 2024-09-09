@@ -1,40 +1,54 @@
 package Caso;
+import java.util.Queue;
 
-public class Distribuidor extends Thread {
-    private Producto Tipo_producto;
-    private Buffer depositoDistribucion;
+import Caso.Producto.Tipo;
 
-    public enum Producto {
-        A, B, FIN_A, FIN_B
-    }
+class Distribuidor extends Thread {
+    private Buffer buffer;
+    private Tipo tipoDistribuidor;
+    private boolean finaliza = false;
 
-    public Distribuidor(Producto producto, Buffer depositoDistribucion) {
-        this.Tipo_producto = producto;
-        this.depositoDistribucion = depositoDistribucion;
+    public Distribuidor(Tipo tipoDistribuidor, Buffer buffer) {
+        this.buffer = buffer;
+        this.tipoDistribuidor = tipoDistribuidor;
     }
 
     @Override
     public void run() {
         try {
-            while (true) {
-                depositoDistribucion.retirarProducto();
-                System.out.println("Distribuidor de producto " + Tipo_producto + " retiró un producto.");
-
-                if (Tipo_producto == Producto.FIN_A || Tipo_producto == Producto.FIN_B) {
-                    System.out.println("Distribuidor de " + Tipo_producto + " ha terminado.");
-                    break;
+            Queue<Producto> productos = buffer.getProductos();
+            while (!finaliza) {
+                synchronized (buffer) {
+                    if (productos.isEmpty()) {
+                        buffer.wait();
+                    } else {
+                        Producto primerProducto = productos.peek();
+                        if ((tipoDistribuidor == Producto.Tipo.A && (primerProducto.getTipo() == Producto.Tipo.A || primerProducto.getTipo() == Producto.Tipo.FIN_A)) ||
+                            (tipoDistribuidor == Producto.Tipo.B && (primerProducto.getTipo() == Producto.Tipo.B || primerProducto.getTipo() == Producto.Tipo.FIN_B))) {
+                            
+                            Producto producto = buffer.retirar();
+                            buffer.notifyAll();
+    
+                            if (producto.getTipo() == Producto.Tipo.FIN_A || producto.getTipo() == Producto.Tipo.FIN_B) {
+                                finaliza = true;
+                            }
+                        } else {
+                            buffer.wait();
+                        }
+                    }
                 }
             }
-        } catch (InterruptedException e) {
-            System.out.println("Distribuidor ha sido interrumpido.");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+    
 
-    public Producto getTipo_producto() {
-        return Tipo_producto;
+    public boolean isFinaliza() {
+        return finaliza;
     }
 
-    public void setTipo_producto(Producto producto) {
-        this.Tipo_producto = producto;
+    public void setFinaliza(boolean finaliza) {
+        this.finaliza = finaliza;
     }
 }

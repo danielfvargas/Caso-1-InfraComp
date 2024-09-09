@@ -1,15 +1,35 @@
 package Caso;
 
-public class Operario_interno{
-    private boolean finaliza;
-    private Buffer inicio;
-    private Buffer fin;
+class Operario_interno extends Thread {
+    private Buffer bufferInicio;
+    private Buffer bufferFin;
+    private boolean finaliza = false;
 
-    public Operario_interno(boolean finaliza, Buffer inicio, Buffer fin) {
-        this.finaliza = finaliza;
-        this.inicio = inicio;
-        this.fin = fin;
+    public Operario_interno(Buffer bufferInicio, Buffer bufferFin) {
+        this.bufferInicio = bufferInicio;
+        this.bufferFin = bufferFin;
+    }
 
+    @Override
+    public void run() {
+        try {
+            int contadorFin = 0;
+            while (!finaliza) { 
+                Producto producto = bufferInicio.retirar();
+                bufferFin.almacenar(producto);
+                if (producto.getTipo() == Producto.Tipo.FIN_A || producto.getTipo() == Producto.Tipo.FIN_B) {
+                    contadorFin++;
+                    if (contadorFin == 4){
+                        finaliza = true;
+                    }
+                } else {
+                Thread.yield();  
+                }
+            }
+        }
+            catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean isFinaliza() {
@@ -19,24 +39,4 @@ public class Operario_interno{
     public void setFinaliza(boolean finaliza) {
         this.finaliza = finaliza;
     }
-
-    public Buffer getinicial() {
-        return inicio;
-    }
-
-    public void setinicial(Buffer inicio) {
-        this.inicio = inicio;
-    }
-
-    public Buffer getfinal() {
-        return fin;
-    }
-
-    public void setfinal(Buffer fin) {
-        this.fin = fin;
-    }
-
-    
-    
-    
 }
